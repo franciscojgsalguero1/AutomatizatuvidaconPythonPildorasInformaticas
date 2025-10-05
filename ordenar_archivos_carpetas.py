@@ -1,18 +1,16 @@
 import os
 import shutil
+import threading
 import time
+import threading
 from asyncio import log
-#from asyncio import log
-#from sys import deactivate_stack_trampoline
-from tkinter import Tk, filedialog
+from tkinter import Tk, filedialog, Button, Label, dialog
 from datetime import datetime
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, DirCreatedEvent, FileCreatedEvent
 import getpass
 # Crear carpetas en destino si no existen
 import os.path
-
-#ruta = "C/Users/franc/Desktop/inventado"
 
 # tipos=["Imágenes", "PDFs", "Vídeos", "Documentos_Word", "Documentos_txt"]
 
@@ -75,10 +73,6 @@ def ordenar_archivos(ruta):
 
                 shutil.move(ruta_archivo, destino)
 
-    # Arreglar esta línea de código , falla al leer
-                #with open(os.path.join(ruta, "log_movimientos.txt"), "a", encoding="utf-8"):
-                    #log.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Usuario: {usuario} - Movido: {archivo} -> {destino}\n")
-
 class ManejadorEventos(FileSystemEventHandler):
 
     def on_created(self, event):
@@ -92,21 +86,29 @@ for carpeta in set(extensiones.values()):
     if not os.path.exists(ruta_carpeta):
         os.makedirs(ruta_carpeta)
 
-ordenar_archivos(ruta)
+def iniciar_vigilancia():
+    observador.start()
 
-manejador_eventos=ManejadorEventos()
-observador=Observer()
-observador.schedule(manejador_eventos, ruta, recursive=False)
-observador.start()
-
-print(f"Vigilando la carpeta: {ruta}")
-print("Presiona Ctrl+C para detener el programa")
-
-try:
-    while True:
-        time.sleep(1)
-except KeyboardInterrupt:
-    print("Deteniendo vigilancia")
+def detener_vigilancia():
     observador.stop()
+    observador.join()
+    ventana.quit()
 
-observador.join()
+if ruta != '':
+    ordenar_archivos(ruta)
+
+    manejador_eventos=ManejadorEventos()
+    observador=Observer()
+    observador.schedule(manejador_eventos, ruta, recursive=False)
+
+    ventana.deiconify()
+    ventana.title("Vigilancia de carpeta")
+    ventana.geometry("400x150")
+
+    Label(ventana, text=f"Vigilando la carpeta: \n {ruta}", wraplength=350).pack(pady=10)
+    Button(ventana, text="Detener vigilancia y salir", command=detener_vigilancia).pack(pady=10)
+
+    hilo_vigilancia=threading.Thread(target=iniciar_vigilancia, daemon=True)
+    hilo_vigilancia.start()
+    ventana.mainloop()
+
