@@ -111,4 +111,3 @@ if ruta != '':
     hilo_vigilancia=threading.Thread(target=iniciar_vigilancia, daemon=True)
     hilo_vigilancia.start()
     ventana.mainloop()
-

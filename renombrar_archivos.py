@@ -16,8 +16,8 @@ for f in os.listdir(carpeta):
 ruta_deshacer=os.path.join(carpeta, "deshacer.bat")
 #deshacer.sh
 with open(ruta_deshacer, "w", encoding="utf-8") as deshacer_mem:
-# ruta_deshacer.write("#!/bin/bash\n")
-# ruta_deshacer.write(f'cd "{carpeta}" || exis\n\n')
+    # ruta_deshacer.write("#!/bin/bash\n")
+    # ruta_deshacer.write(f'cd "{carpeta}" || exis\n\n')
     for i, nombre_actual in enumerate(archivos, start=1):
         extension_actual=os.path.splitext(nombre_actual)[1]
         nuevo_nombre=f"{prefijo}{i:03}{extension_actual}"
